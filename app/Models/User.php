@@ -12,7 +12,7 @@ use App\Helpers\Validator;
 class User
 {
     private mysqli $conn;
-    private array $accountTypes = ['admin', 'staff', 'teacher', 'student'];
+    private array $accountTypes =  ['staff', 'teacher', 'student'];
 
     /**
      * Constructor initializes the database connection.

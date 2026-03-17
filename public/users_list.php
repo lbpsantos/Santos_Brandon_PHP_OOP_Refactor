@@ -14,8 +14,8 @@ use App\Helpers\Redirect;
 
 $auth = new Auth();
 
-// Require admin or staff access
-if (!$auth->isStaffOrAdmin()) {
+// Require admin access
+if (!$auth->isAdmin()) {
     FlashMessage::set('Access denied for your role.', 'error');
     Redirect::toHome();
 }
@@ -27,8 +27,10 @@ $userModel = new User($conn);
 // Get all users
 $result = $userModel->read();
 
+// Extract users, errors, and check for flash messages from previous operations
 $users = $result['success'] ? $result['users'] : [];
 $error = $result['error'];
+$flash = FlashMessage::get(); // Retrieve any flash message (e.g., from create/update/delete operations)
 
 $accountTypeLabels = [
     'admin' => 'Admin',
@@ -53,6 +55,8 @@ $accountTypeLabels = [
         a.btn-add { display: inline-block; padding: 8px 12px; border-radius: 6px; text-decoration: none; color: #fff; background: #28a745; }
         .alert { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 14px; }
         .alert.error { background: #ffe3e3; color: #7a1c1c; border: 1px solid #f0b4b4; }
+        .alert.success { background: #e2f5e9; color: #1b6b2c; border: 1px solid #b7e2c4; }
+        .alert.info { background: #e0efff; color: #0f4b8f; border: 1px solid #b7d5ff; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background: #f8f9fa; font-weight: 600; }
@@ -74,10 +78,19 @@ $accountTypeLabels = [
             <a class="btn-add" href="users_new.php">Add User</a>
         </h2>
 
+        <!-- Display flash message from previous operations (create, update, delete) -->
+        <?php if ($flash): ?>
+            <div class="alert <?php echo htmlspecialchars($flash['type'], ENT_QUOTES); ?>">
+                <?php echo htmlspecialchars($flash['message'], ENT_QUOTES); ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- Display page-level errors from current operation -->
         <?php if ($error !== ''): ?>
             <div class="alert error"><?php echo htmlspecialchars($error, ENT_QUOTES); ?></div>
         <?php endif; ?>
 
+        <!-- Display users table or no-data message -->
         <?php if (empty($users)): ?>
             <div class="no-data">No users found.</div>
         <?php else: ?>
@@ -90,13 +103,16 @@ $accountTypeLabels = [
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Loop through all users and display in table rows -->
                     <?php foreach ($users as $user): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?></td>
                             <td><?php echo htmlspecialchars($accountTypeLabels[$user['account_type']] ?? $user['account_type'], ENT_QUOTES); ?></td>
                             <td>
                                 <div class="actions">
+                                    <!-- Edit button - links to user edit page -->
                                     <a class="btn-edit" href="users_edit.php?user_id=<?php echo htmlspecialchars((string)$user['id'], ENT_QUOTES); ?>">Edit</a>
+                                    <!-- Delete button - only show for non-default admin user (id !== 1) -->
                                     <?php if ($user['id'] !== 1): ?>
                                         <a class="btn-delete" href="users_delete.php?user_id=<?php echo htmlspecialchars((string)$user['id'], ENT_QUOTES); ?>" onclick="return confirm('Are you sure?')">Delete</a>
                                     <?php endif; ?>

@@ -6,8 +6,7 @@ namespace App\Core;
  * Authentication and authorization handler following PSR-1 conventions.
  * Manages login, logout, session checks, and role-based access control.
  */
-class Auth
-{
+class Auth{
     private SessionManager $sessionManager;
 
     /**
@@ -15,8 +14,7 @@ class Auth
      * 
      * @param SessionManager|null $sessionManager
      */
-    public function __construct(?SessionManager $sessionManager = null)
-    {
+    public function __construct(?SessionManager $sessionManager = null){
         // Default to a new SessionManager so the typed property is never null
         $this->sessionManager = $sessionManager ?? new SessionManager();
         SessionManager::start();
@@ -30,8 +28,7 @@ class Auth
      * @param mysqli $connection
      * @return array ['success' => bool, 'error' => string, 'user' => array|null]
      */
-    public function login(string $username, string $password, \mysqli $connection): array
-    {
+    public function login(string $username, string $password, \mysqli $connection): array{
         $username = trim($username);
         $password = trim($password);
 
@@ -82,8 +79,7 @@ class Auth
      * 
      * @return void
      */
-    public function logout(): void
-    {
+    public function logout(): void{
         SessionManager::destroy();
     }
 
@@ -92,8 +88,7 @@ class Auth
      * 
      * @return bool
      */
-    public function isLoggedIn(): bool
-    {
+    public function isLoggedIn(): bool{
         return SessionManager::has('user_id');
     }
 
@@ -102,8 +97,7 @@ class Auth
      * 
      * @return array|null User data or null if not logged in
      */
-    public function getCurrentUser(): ?array
-    {
+    public function getCurrentUser(): ?array{
         if (!$this->isLoggedIn()) {
             return null;
         }
@@ -121,8 +115,7 @@ class Auth
      * @param string|array $roles Single role or array of roles
      * @return bool
      */
-    public function hasRole($roles): bool
-    {
+    public function hasRole($roles): bool{
         if (!$this->isLoggedIn()) {
             return false;
         }
@@ -138,8 +131,7 @@ class Auth
      * 
      * @return bool
      */
-    public function isAdmin(): bool
-    {
+    public function isAdmin(): bool{
         return $this->hasRole('admin');
     }
 
