@@ -27,8 +27,10 @@ $programModel = new Program($conn);
 // Get all programs
 $result = $programModel->read();
 
+// Extract programs, errors, and check for flash messages from previous operations
 $programs = $result['success'] ? $result['programs'] : [];
 $error = $result['error'];
+$flash = FlashMessage::get(); // Retrieve any flash message (e.g., from create/update/delete operations)
 
 ?>
 <!DOCTYPE html>
@@ -46,6 +48,8 @@ $error = $result['error'];
         a.btn-add { display: inline-block; padding: 8px 12px; border-radius: 6px; text-decoration: none; color: #fff; background: #28a745; }
         .alert { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 14px; }
         .alert.error { background: #ffe3e3; color: #7a1c1c; border: 1px solid #f0b4b4; }
+        .alert.success { background: #e2f5e9; color: #1b6b2c; border: 1px solid #b7e2c4; }
+        .alert.info { background: #e0efff; color: #0f4b8f; border: 1px solid #b7d5ff; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background: #f8f9fa; font-weight: 600; }
@@ -67,6 +71,14 @@ $error = $result['error'];
             <a class="btn-add" href="program_new.php">Add Program</a>
         </h2>
 
+        <!-- Display flash message from previous operations (create, update, delete) -->
+        <?php if ($flash): ?>
+            <div class="alert <?php echo htmlspecialchars($flash['type'], ENT_QUOTES); ?>">
+                <?php echo htmlspecialchars($flash['message'], ENT_QUOTES); ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- Display page-level errors from current operation -->
         <?php if ($error !== ''): ?>
             <div class="alert error"><?php echo htmlspecialchars($error, ENT_QUOTES); ?></div>
         <?php endif; ?>

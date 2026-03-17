@@ -86,7 +86,7 @@ header('Expires: 0');
                 <a class="btn" href="program_list.php">Program List</a>
                 <a class="btn secondary" href="subject_list.php">Subject List</a>
                 
-                <?php if ($auth->isStaffOrAdmin()): ?>
+                <?php if ($auth->isAdmin()): ?>
                     <a class="btn third" href="users_list.php">User Management</a>
                 <?php endif; ?>
 

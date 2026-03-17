@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User creation page - allows admin and staff to create new users.
+ * User creation page - allows admin to create new users.
  */
 
 require_once __DIR__ . '/../config/config.php';
@@ -15,8 +15,8 @@ use App\Helpers\Redirect;
 $auth = new Auth();
 $user = $auth->getCurrentUser();
 
-// Require admin or staff access
-if (!$auth->isStaffOrAdmin()) {
+// Require admin access
+if (!$auth->isAdmin()) {
     FlashMessage::set('Access denied for your role.', 'error');
     Redirect::toHome();
 }
@@ -33,7 +33,6 @@ $confirmPasswordValue = '';
 
 $accountTypes = $userModel->getAccountTypes();
 $accountTypeLabels = [
-    'admin' => 'Admin',
     'staff' => 'Staff',
     'teacher' => 'Teacher',
     'student' => 'Student',
